@@ -63,22 +63,21 @@ class CartController extends Controller
         $order = new Order();
         $order_product = new OrderProduct();
 
-            $order->session=session_id();
-            $order->qty = $session['cart.qty'];
-            $order->total = $session['cart.sum'];
-            $transaction=Yii::$app->getDb()->beginTransaction();
-            if(!$order->save() || !$order_product->saveOrderProducts($session['cart'],$order->id)){
-               // Yii::$app->session->setFlash('error', 'Ошибка сохранения заказа');
-                $transaction->rollBack();
-            }else{
-                $transaction->commit();
-                Yii::$app->session->setFlash('success', 'Заказ сохранен');
-                $session->remove('cart');
-                $session->remove('cart.qty');
-                $session->remove('cart.sum');
-                return $this->refresh();
-            }
-        $session->destroy();
+        $order->session = session_id();
+        $order->qty = $session['cart.qty'];
+        $order->total = $session['cart.sum'];
+        $transaction = Yii::$app->getDb()->beginTransaction();
+        if (!$order->save() || !$order_product->saveOrderProducts($session['cart'], $order->id)) {
+
+            $transaction->rollBack();
+        } else {
+            $transaction->commit();
+            Yii::$app->session->setFlash('success', 'Заказ сохранен');
+            $session->remove('cart');
+            $session->remove('cart.qty');
+            $session->remove('cart.sum');
+            return $this->refresh();
+        }
         return $this->redirect(Yii::$app->request->referrer);
     }
 
